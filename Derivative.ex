@@ -11,23 +11,33 @@ defmodule Derivative do
 {:ln, expr()} |
 {:div, expr(), expr()} |
 {:powr, expr(), expr()} |
-{:div, expr(), expr()}
+{:div, expr(), expr()} |
+{:sqrt, expr()} |
+{:trig, expr()}
 
 def test() do
   #expression = {:add, {:mul, {:num, -2}, {:var, :x}}, {:mul, {:var, :x}, {:num, 5}}}
   #expression2 = {:add, {:mul, {:num, 2}, {:var, :x}}, {:num, 4}}
   #deriv(expression2, :x)
   expression3 = {:add, {:powr, {:var, :x}, {:num, 3}}, {:num, 4}}
-  expressionLN = {:ln, {:mul, {:var, :x}, {:num, 2}}}
   d = deriv(expression3, :x)
-  ln = deriv(expressionLN, :x)
   #deriv(expression, :x)
   IO.write("expression: #{pprint(expression3)}\n")
   IO.write("Derivative: #{pprint(d)}\n")
   IO.write("Simplified: #{pprint(simplify(d))}\n")
+
+  expressionLN = {:ln, {:mul, {:var, :x}, {:num, 2}}}
+  ln = deriv(expressionLN, :x)
   IO.write("expression: #{pprint(expressionLN)}\n")
   IO.write("Derivative: #{pprint(ln)}\n")
-  IO.write("simplified: #{pprint(simplify(ln))}\n" )
+  IO.write("simplified: #{pprint(simplify(ln))}\n")
+
+  expressionSQRT = {:sqrt, {:mul, {:var, :x}, {:num, 3}}}
+  sqrt = deriv(expressionSQRT, :x)
+  IO.write("expression: #{pprint(expressionSQRT)}\n")
+  IO.write("Derivative: #{pprint(sqrt)}\n")
+  IO.write("simplified: #{pprint(simplify(sqrt))}\n")
+
 end
 
 def deriv({:num, _}, _) do {:num, 0} end
@@ -39,13 +49,13 @@ def deriv({:var, _}, _) do {:num, 0} end
 def deriv({:add, expr1, expr2}, v) do {:add, deriv(expr1, v), deriv(expr2, v)} end
 #f(x) = 2x * 3x, d(f(x))/dx = 2*3x + 2x*3 = 12x
 def deriv({:mul, expr1, expr2}, v) do {:add, {:mul, deriv(expr1, v), expr2}, {:mul, expr1, deriv(expr2, v)}} end
-#f(x) = ln(x), d(f(x))/dx = 1/x
-def deriv({:ln, x}, x) do {:div, {:num, 1}, {:var, x}} end
 #f(x) = x^n, d(f(x))/dx = nx^(n-1)
 def deriv({:powr, expr1, {:num, n}}, x) do {:mul, {:mul, {:num, n}, {:powr, expr1, {:num, n-1}}}, deriv(expr1, x)} end
 #f(x) = ln(x), d(f(x))/dx = 1/x
 def deriv({:ln, expr1}, x) do {:mul, {:div, {:num, 1}, expr1}, deriv(expr1, x)} end
-
+#f(x) = sqrt(x)
+def deriv({:sqrt, expr}, x) do {:mul, deriv(expr, x), {:div, {:num, 1}, {:mul, {:sqrt, expr}, {:num, 2}}}} end
+#f(x) = cos(x)
 
 #The following 4 functions simplifies expressions based on the operator used recursively
 def simplify({:add, expr1, expr2}) do simplify_add(simplify(expr1), simplify(expr2)) end
@@ -74,12 +84,17 @@ def simplify_div(expr1, {:num, 0}) do "Error: Div by zero" end
 def simplify_div(expr1, {:num, 1}) do expr1 end
 def simplify_div(expr1, expr2) do {:div, expr1, expr2} end
 
+def simplify_sqrt({:num, 0}) do {:num, 0} end
+def simplify_sqrt({:num, 1}) do {:num, 1} end
+def simplify_sqrt(expr) do {:sqrt, expr} end
+
 def pprint({:num, n}) do "#{n}" end #Prints a number
 def pprint({:var, v}) do "#{v}" end #Prints variable
 def pprint({:add, expr1, expr2}) do "#{pprint(expr1)} + #{pprint(expr2)}" end #Prints addition
 def pprint({:mul, expr1, expr2}) do "(#{pprint(expr1)} * #{pprint(expr2)})" end #Prints multiplication
 def pprint({:powr, expr1, expr2}) do "#{pprint(expr1)} ^(#{pprint(expr2)})" end #Prints exponents
-def pprint({:div, expr1, expr2}) do "(#{pprint(expr1)}) / (#{pprint(expr2)})" end
-def pprint({:ln, expr1}) do "ln#{pprint(expr1)}" end
+def pprint({:div, expr1, expr2}) do "(#{pprint(expr1)}) / (#{pprint(expr2)})" end #Prints division of two expressions
+def pprint({:ln, expr1}) do "ln#{pprint(expr1)}" end #Prints ln(expression)
+def pprint({:sqrt, expr}) do "sqrt#{pprint(expr)}" end
 
 end
