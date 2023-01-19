@@ -13,7 +13,8 @@ defmodule Derivative do
 {:powr, expr(), expr()} |
 {:div, expr(), expr()} |
 {:sqrt, expr()} |
-{:trig, expr()}
+{:cos, expr()} |
+{:sin, expr()}
 
 def test() do
   #expression = {:add, {:mul, {:num, -2}, {:var, :x}}, {:mul, {:var, :x}, {:num, 5}}}
@@ -22,21 +23,33 @@ def test() do
   expression3 = {:add, {:powr, {:var, :x}, {:num, 3}}, {:num, 4}}
   d = deriv(expression3, :x)
   #deriv(expression, :x)
-  IO.write("expression: #{pprint(expression3)}\n")
+  IO.write("\nexpression: #{pprint(expression3)}\n")
   IO.write("Derivative: #{pprint(d)}\n")
   IO.write("Simplified: #{pprint(simplify(d))}\n")
 
   expressionLN = {:ln, {:mul, {:var, :x}, {:num, 2}}}
   ln = deriv(expressionLN, :x)
-  IO.write("expression: #{pprint(expressionLN)}\n")
+  IO.write("\nexpression: #{pprint(expressionLN)}\n")
   IO.write("Derivative: #{pprint(ln)}\n")
   IO.write("simplified: #{pprint(simplify(ln))}\n")
 
   expressionSQRT = {:sqrt, {:mul, {:var, :x}, {:num, 3}}}
   sqrt = deriv(expressionSQRT, :x)
-  IO.write("expression: #{pprint(expressionSQRT)}\n")
+  IO.write("\nexpression: #{pprint(expressionSQRT)}\n")
   IO.write("Derivative: #{pprint(sqrt)}\n")
   IO.write("simplified: #{pprint(simplify(sqrt))}\n")
+
+  expressionCOS = {:cos, {:mul, {:var, :x}, {:num, 6}}}
+  cos = deriv(expressionCOS, :x)
+  IO.write("\nexpression: #{pprint(expressionCOS)}\n")
+  IO.write("Derivative: #{pprint(cos)}\n")
+  IO.write("simplified: #{pprint(simplify(cos))}\n")
+
+  expressionSIN = {:sin, {:mul, {:var, :x}, {:num, 3}}}
+  sin = deriv(expressionSIN, :x)
+  IO.write("\nexpression: #{pprint(expressionSIN)}\n")
+  IO.write("Derivative: #{pprint(sin)}\n")
+  IO.write("simplified: #{pprint(simplify(sin))}\n")
 
 end
 
@@ -53,9 +66,12 @@ def deriv({:mul, expr1, expr2}, v) do {:add, {:mul, deriv(expr1, v), expr2}, {:m
 def deriv({:powr, expr1, {:num, n}}, x) do {:mul, {:mul, {:num, n}, {:powr, expr1, {:num, n-1}}}, deriv(expr1, x)} end
 #f(x) = ln(x), d(f(x))/dx = 1/x
 def deriv({:ln, expr1}, x) do {:mul, {:div, {:num, 1}, expr1}, deriv(expr1, x)} end
-#f(x) = sqrt(x)
+#f(x) = sqrt(x), d(f(x))/dx = (f'(x))/(2(sqrt(x))
 def deriv({:sqrt, expr}, x) do {:mul, deriv(expr, x), {:div, {:num, 1}, {:mul, {:sqrt, expr}, {:num, 2}}}} end
-#f(x) = cos(x)
+#f(x) = cos(x), d(f(x))/dx = x'*-sin(x)
+def deriv({:cos, expr}, x) do {:mul, deriv(expr, x), {:mul, {:sin, expr}, {:num, -1}}} end
+#f(x) = sin(x), d(f(x))/dx = x'*cos(x)
+def deriv({:sin, expr}, x) do {:mul, deriv(expr, x), {:cos, expr}} end
 
 #The following 4 functions simplifies expressions based on the operator used recursively
 def simplify({:add, expr1, expr2}) do simplify_add(simplify(expr1), simplify(expr2)) end
@@ -96,5 +112,6 @@ def pprint({:powr, expr1, expr2}) do "#{pprint(expr1)} ^(#{pprint(expr2)})" end 
 def pprint({:div, expr1, expr2}) do "(#{pprint(expr1)}) / (#{pprint(expr2)})" end #Prints division of two expressions
 def pprint({:ln, expr1}) do "ln#{pprint(expr1)}" end #Prints ln(expression)
 def pprint({:sqrt, expr}) do "sqrt#{pprint(expr)}" end
-
+def pprint({:cos, expr}) do "cos(#{pprint(expr)}" end
+def pprint({:sin, expr}) do ("sin(#{pprint(expr)}") end
 end
