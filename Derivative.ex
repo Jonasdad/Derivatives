@@ -1,9 +1,4 @@
 defmodule Derivative do
-#{:add, {:mul, {:num, 2}, {:var, x}}, {:num, 3}}; #2x + 3
-#{:add, {{:mul, {:pow, {:var, x}, {:num, 4}}, {:num 2}}}, {:mul, {:num, 5}, {var:, x}}} #2x^4+5x (?)
-#{:add, {:mul, {:num, 3}, {var: x}}, {:mul, {:num, 1}, {:var, x}}} #3x+x
-#f(x) = C, d(f(x))/dx = 0
-
 @type literal() :: {:num, number()} | {:var, atom()}
 @type expr() :: literal() |
 {:add, expr(), expr()} |
@@ -15,11 +10,8 @@ defmodule Derivative do
 {:sqrt, expr()} |
 {:cos, expr()} |
 {:sin, expr()}
-
+#test contains a test for all the different derivatives found below
 def test() do
-  #expression = {:add, {:mul, {:num, -2}, {:var, :x}}, {:mul, {:var, :x}, {:num, 5}}}
-  #expression2 = {:add, {:mul, {:num, 2}, {:var, :x}}, {:num, 4}}
-  #deriv(expression2, :x)
   expressionLI = {:num, 5}
   li = deriv(expressionLI, :x)
   IO.write("\nexpression: #{pprint(expressionLI)}\n")
@@ -81,7 +73,7 @@ def test() do
   IO.write("simplified: #{pprint(simplify(sin))}\n")
 
 end
-
+#Differentiation rules:
 def deriv({:num, _}, _) do {:num, 0} end
 #f(x) = x, d(f(x))/dx = 1
 def deriv({:var, v}, v) do {:num, 1} end
@@ -133,6 +125,7 @@ def simplify_sqrt({:num, 0}) do {:num, 0} end
 def simplify_sqrt({:num, 1}) do {:num, 1} end
 def simplify_sqrt(expr) do {:sqrt, expr} end
 
+#pprint = Pretty print: Human readable expressions
 def pprint({:num, n}) do "#{n}" end #Prints a number
 def pprint({:var, v}) do "#{v}" end #Prints variable
 def pprint({:add, expr1, expr2}) do "(#{pprint(expr1)} + #{pprint(expr2)})" end #Prints addition
