@@ -20,12 +20,41 @@ def test() do
   #expression = {:add, {:mul, {:num, -2}, {:var, :x}}, {:mul, {:var, :x}, {:num, 5}}}
   #expression2 = {:add, {:mul, {:num, 2}, {:var, :x}}, {:num, 4}}
   #deriv(expression2, :x)
-  expression3 = {:add, {:powr, {:var, :x}, {:num, 3}}, {:num, 4}}
-  d = deriv(expression3, :x)
-  #deriv(expression, :x)
-  IO.write("\nexpression: #{pprint(expression3)}\n")
-  IO.write("Derivative: #{pprint(d)}\n")
-  IO.write("Simplified: #{pprint(simplify(d))}\n")
+  expressionLI = {:num, 5}
+  li = deriv(expressionLI, :x)
+  IO.write("\nexpression: #{pprint(expressionLI)}\n")
+  IO.write("Derivative: #{pprint(li)}\n")
+  IO.write("Simplified: #{pprint(simplify(li))}\n")
+
+  expressionVAR = {:var, :x}
+  var = deriv(expressionVAR, :x)
+  IO.write("\nexpression: #{pprint(expressionVAR)}\n")
+  IO.write("Derivative: #{pprint(var)}\n")
+  IO.write("Simplified: #{pprint(simplify(var))}\n")
+
+  expressionY = {:var, :y}
+  y = deriv(expressionY, :x)
+  IO.write("\nexpression: #{pprint(expressionY)}\n")
+  IO.write("Derivative: #{pprint(y)}\n")
+  IO.write("Simplified: #{pprint(simplify(y))}\n")
+
+  expressionADD = {:add, {:mul, {:var, :x}, {:num, 3}}, {:mul, {:var, :x}, {:num, 4}}}
+  add = deriv(expressionADD, :x)
+  IO.write("\nexpression: #{pprint(expressionADD)}\n")
+  IO.write("Derivative: #{pprint(add)}\n")
+  IO.write("Simplified: #{pprint(simplify(add))}\n")
+
+  expressionMUL = {:mul, {:mul, {:var, :x}, {:num, 11}}, {:add, {:var, :x}, {:num, 1}}}
+  mul = deriv(expressionMUL, :x)
+  IO.write("\nexpression: #{pprint(expressionMUL)}\n")
+  IO.write("Derivative: #{pprint(mul)}\n")
+  IO.write("Simplified: #{pprint(simplify(mul))}\n")
+
+  expressionPOWR = {:add, {:powr, {:var, :x}, {:num, 3}}, {:num, 4}}
+  powr = deriv(expressionPOWR, :x)
+  IO.write("\nexpression: #{pprint(expressionPOWR)}\n")
+  IO.write("Derivative: #{pprint(powr)}\n")
+  IO.write("Simplified: #{pprint(simplify(powr))}\n")
 
   expressionLN = {:ln, {:mul, {:var, :x}, {:num, 2}}}
   ln = deriv(expressionLN, :x)
@@ -106,7 +135,7 @@ def simplify_sqrt(expr) do {:sqrt, expr} end
 
 def pprint({:num, n}) do "#{n}" end #Prints a number
 def pprint({:var, v}) do "#{v}" end #Prints variable
-def pprint({:add, expr1, expr2}) do "#{pprint(expr1)} + #{pprint(expr2)}" end #Prints addition
+def pprint({:add, expr1, expr2}) do "(#{pprint(expr1)} + #{pprint(expr2)})" end #Prints addition
 def pprint({:mul, expr1, expr2}) do "(#{pprint(expr1)} * #{pprint(expr2)})" end #Prints multiplication
 def pprint({:powr, expr1, expr2}) do "#{pprint(expr1)} ^(#{pprint(expr2)})" end #Prints exponents
 def pprint({:div, expr1, expr2}) do "(#{pprint(expr1)}) / (#{pprint(expr2)})" end #Prints division of two expressions
